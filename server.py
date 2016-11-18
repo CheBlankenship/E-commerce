@@ -9,7 +9,7 @@ salt = bcrypt.gensalt() # generate a salt
 encrypted_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
 import uuid
-token = uuid.uuid4()
+
 
 
 
@@ -49,10 +49,10 @@ def user_signup():
 @app.route('/api/user/login', methods=['POST'])
 def user_login():
     data = request.get_json()
-    request.get_json().get('auth_token')
-    password = data["password"]
+    # request.get_json().get('auth_token')
     query = db.query("select password, id from customer where username = $1" ,data['username']).namedresult()
-    print query
+
+    password = data["password"]
 
     encrypted_password = query[0].password  # encrypted password retrieved
     # from database record
@@ -61,15 +61,20 @@ def user_login():
     # part of the encrypted_password, and hash it with the entered password
     rehash = bcrypt.hashpw(password.encode('utf-8'), encrypted_password)
     # if we get the same result, that means the password was correct
-    
+    customer_id = query[0].id
 
+    db.insert(
+        'auth_token',
+        token = uuid.uuid4(),
+        customer_id = customer_id
+    )
 
     if rehash == encrypted_password:
-        print 'Login success!'
+        success = "success"
     else:
-        print 'Login failed!'
+        success = "failed"
 
-    return 'Log in succes!!!!!'
+    return success
 
 
 
