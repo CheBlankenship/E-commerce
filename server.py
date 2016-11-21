@@ -10,9 +10,6 @@ encrypted_password = bcrypt.hashpw(password.encode('utf-8'), salt)
 
 import uuid
 
-
-
-
 db = pg.DB(dbname = "e-commerce")
 app = Flask('eCommerce')
 
